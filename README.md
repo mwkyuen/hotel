@@ -7,9 +7,9 @@
 
 2) run the following command
 
-'''
+```
 pip install --editable .
-'''
+```
 
 
 
