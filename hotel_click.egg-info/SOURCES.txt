@@ -1,7 +1,0 @@
-hotel.py
-hotel_click.egg-info/PKG-INFO
-hotel_click.egg-info/SOURCES.txt
-hotel_click.egg-info/dependency_links.txt
-hotel_click.egg-info/entry_points.txt
-hotel_click.egg-info/requires.txt
-hotel_click.egg-info/top_level.txt

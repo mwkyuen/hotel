@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-	name = 'hotel_click',
+	name = 'hotel',
 	version = '1.0',
 	py_modules = ['hotel'],
 	install_requires = [
