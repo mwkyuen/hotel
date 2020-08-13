@@ -57,11 +57,8 @@ def cli(ctx):
 @click.argument('hotel_file', type = click.File())
 def initialize(hotel_file):
     """
-    Initializes new session for hotel.json
+    Initializes new hotel.json. Creates necessary files.
 
-    Create necessary folders and files with proper headers.
-
-    Starts new session.csv
     """
     
     if os.path.isfile('session.csv'):
@@ -113,11 +110,8 @@ def initialize(hotel_file):
 @click.pass_obj
 def register(config, name, email):
     """
-    Method to register a new client, adding their information to the hotel DB.
+    Add new client information to the DB.
     
-    Name type STRING; no spaces; '.' or '_' acceptable
-
-    Return unique clident ID
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -138,10 +132,8 @@ def register(config, name, email):
 @click.pass_obj
 def reserve_dates(config, client_id, room_type, start, end):
     """
-    Method used to lock in the dates selected
-    
-    Client ID type INT
-    Dates format: %Y-%M-%D
+    Find available rooms. Reserve selected room.
+
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -178,10 +170,8 @@ def reserve_dates(config, client_id, room_type, start, end):
 @click.pass_obj
 def delete_reservation(config, client_id):
     """
-    Method used to remove reservation
-    
-    Client ID type INT
-    Dates format: %Y-%M-%D
+    Undo reserve_dates command
+
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -206,11 +196,10 @@ def delete_reservation(config, client_id):
 @click.pass_obj
 def check_in(config, client_id):
     """
-    Method used to confirm the presence of client in the Hotel
-    Update both db and hotel obj
+    Changes state of client in DB
 
-    Should verify booking is true!
     """
+    # Should verify booking is true!
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
 
@@ -230,7 +219,7 @@ def check_in(config, client_id):
 @click.pass_obj
 def check_out(config, client_id, paid):
     """
-    Method used to confirm the client has checked out
+    Reset client state 
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -245,9 +234,8 @@ def check_out(config, client_id, paid):
 @click.pass_obj
 def get_client_info(config, client_id):
     """
-    Method used to find the client info
-    WARNING: assumes that all names are unique in the DB
-        """
+    Prints client info
+    """
     client_info = config.client_list.iloc[client_id]
     click.echo(client_info)
 
