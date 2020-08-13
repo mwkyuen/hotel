@@ -1,0 +1,46 @@
+{
+  "hotel_name": "B",
+  "isFull": false,
+  "isInitialized": false,
+  "address": {
+    "streetAddress": "56 7nd Street",
+    "city": "New York",
+    "state": "NY",
+    "postalCode": "50065-7500"
+    },
+  "phoneNumber": "656 888-1234",
+  "email": "b_hotel@gmail.com",
+  "rooms": [
+    {
+      "number":1,
+      "type":1,
+      "cost":10
+
+    },
+    {
+      "number":2,
+      "type":1,
+      "cost":10
+    },
+    {
+      "number":3,
+      "type":2,
+      "cost":20
+    },
+    {
+      "number":4,
+      "type":2,
+      "cost":20
+    },
+    {
+      "number":5,
+      "type":3,
+      "cost":30
+    },
+    {
+      "number":6,
+      "type":3,
+      "cost":30
+    }
+  ]
+}
