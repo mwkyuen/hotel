@@ -401,24 +401,24 @@ def quit():
     click.echo(f'The session for {hotel} is now closed.')
 
 @cli.command()
-@click.argument('hotel_path', type = click.Path())
-def begin(hotel_path):
+@click.argument('hotel_session', type = click.Path())
+def begin(hotel_session):
     """
     Continue from previous session.
 
     Usage:\n
-    hotel begin data/hotel_*/\n
+    hotel begin data/hotel_*/session.csv\n
 
     Arguments:\n
-    hotel_path is type PATH\n
+    hotel_session is filepath to the session.csv of the hotel of interest\n
 
     Description:\n
     This commmand starts a session.\n
-    Moves the session.csv file from data/hotel_*/session.csv to current working directory
+    Moves the session.csv file from data/hotel_*/ to current working directory
     """
-    hotel = hotel_path.split('/')[1]
-
-    shutil.move(os.path.join(hotel_path, 'session.csv'), os.getcwd())
+    hotel = hotel_session.split('/')[1]
+    
+    shutil.move(hotel_session, os.getcwd())
     click.echo(f'The session for {hotel} is now open!')
 
 # @cli.command()
