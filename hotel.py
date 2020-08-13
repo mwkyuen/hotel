@@ -54,10 +54,18 @@ def cli(ctx):
         ctx.obj = Config(hotel_path)
     
 @cli.command()
-@click.argument('hotel_file', type = click.File())
+@click.argument('hotel_file', type = click.Path())
 def initialize(hotel_file):
     """
-    Initializes new hotel.json. Creates necessary files.
+    Initializes new hotel.json, starts new session.
+
+
+    Usage:
+    hotel initialize hotel.json
+
+    Description:
+    This commmand takes a new hotel.json file and creates necessary files and folders
+
 
     """
     
@@ -71,7 +79,7 @@ def initialize(hotel_file):
         hotel_raw = pd.read_json(hotel_file, typ='series')
         dir_path = 'data/hotel_' + hotel_raw['hotel_name']
         os.makedirs(dir_path + '/rooms') 
-        shutil.move('hotel.json', dir_path)
+        shutil.move(hotel_file, os.path.join(dir_path, 'hotel.json'))
 
         rel_path = dir_path + '/client_list.csv'
         fp = os.path.join(script_dir, rel_path)
@@ -132,8 +140,7 @@ def register(config, name, email):
 @click.pass_obj
 def reserve_dates(config, client_id, room_type, start, end):
     """
-    Find available rooms. Reserve selected room.
-
+    Find ideal rooms based on criteria given
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -196,7 +203,7 @@ def delete_reservation(config, client_id):
 @click.pass_obj
 def check_in(config, client_id):
     """
-    Changes state of client in DB
+    Update client list after check-in
 
     """
     # Should verify booking is true!
@@ -219,7 +226,7 @@ def check_in(config, client_id):
 @click.pass_obj
 def check_out(config, client_id, paid):
     """
-    Reset client state 
+    Update client list after check-out 
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -234,7 +241,7 @@ def check_out(config, client_id, paid):
 @click.pass_obj
 def get_client_info(config, client_id):
     """
-    Prints client info
+    Print client info
     """
     client_info = config.client_list.iloc[client_id]
     click.echo(client_info)
@@ -243,7 +250,7 @@ def get_client_info(config, client_id):
 @click.pass_obj
 def get_current_clients(config):
     """
-    Return list of all currently checked in clients
+    Print all checked-in clients
     """
     curr_clients = config.client_list.loc[config.client_list['state'] == 1]
 
@@ -255,6 +262,7 @@ def get_current_clients(config):
 @click.pass_obj
 def get_client_id(config, name, email):
     """
+    Print client ID
     """
     df = config.client_supp.reset_index()
     
@@ -269,6 +277,7 @@ def get_client_id(config, name, email):
 @cli.command()
 def quit():
     """
+    Quit current session
     """
 
     hotel_path = helpers.get_hotel_path()
@@ -281,6 +290,7 @@ def quit():
 @click.argument('hotel_path', type = click.Path())
 def begin(hotel_path):
     """
+    Continue from previous session
     """
     hotel = hotel_path.split('/')[1]
 
