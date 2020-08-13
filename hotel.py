@@ -42,7 +42,7 @@ class Config(object):
 @click.pass_context
 def cli(ctx):
     """
-    I am the hotel concierge.
+    Hello, I am Jeeves, the hotel concierge. How can I help you?
     """
 
     if not os.path.exists('session.csv'):
@@ -59,13 +59,28 @@ def initialize(hotel_file):
     """
     Initializes new hotel.json, starts new session.
 
+    Usage:\n
+    hotel initialize *.json\n
 
-    Usage:
-    hotel initialize hotel.json
+    Arguments:\n
+    *.json must be a valid JSON filepath and located in the same directory as the downloaded *.py files\n
 
-    Description:
-    This commmand takes a new hotel.json file and creates necessary files and folders
+    Description:\n
+    This commmand takes a new *.json file and creates necessary files and folders.\n
+    Renames *.json to hotel.json in new subdirectory.\n
 
+    *.json should have this format:\n
+
+    {"hotel_name": "B",
+     "address": {"streetAddress": "56 7nd Street", "city": "New York", "state": "NY", "postalCode": "50065-7500"},
+     "phoneNumber": "656 888-1234",
+     "email": "b_hotel@gmail.com",
+     "rooms": [
+        {"number":1, "type":1, "cost":10},
+        {"number":2, "type":2, "cost":20},
+        {"number":3, "type":3, "cost":30},
+        ]
+    }
 
     """
     
@@ -119,7 +134,19 @@ def initialize(hotel_file):
 def register(config, name, email):
     """
     Add new client information to the DB.
-    
+
+    Usage:\n
+    hotel register name email\n
+
+    Arguments:\n
+    name is type STRING\n
+    email is type STRING\n
+
+    Description:\n
+    This commmand adds new clients to the DB\n
+    Client_supp.csv saves new client info, assigns a client ID\n
+    Client_list.csv uses client ID to track relevent informtion\n
+
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -141,6 +168,19 @@ def register(config, name, email):
 def reserve_dates(config, client_id, room_type, start, end):
     """
     Find ideal rooms based on criteria given
+
+    Usage:\n
+    hotel reserve-dates client_id, room_type, start_date, end_date\n
+
+    Arguments:\n
+    name is type STRING\n
+    email is type STRING\n
+
+    Description:\n
+    This commmand adds new clients to the DB\n
+    Client_supp.csv saves new client info, assigns a client ID\n
+    Client_list.csv uses client ID to track relevent informtion\n
+
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
