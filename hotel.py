@@ -67,8 +67,8 @@ def initialize(hotel_file):
 
     Description:\n
     This commmand takes a new *.json file and creates necessary files and folders.\n
+    Creates session.csv (start new session; must call Quit at the end of session) in current directory\n
     Renames *.json to hotel.json in new subdirectory.\n
-
     *.json should have this format:\n
 
     {"hotel_name": "B",
@@ -143,9 +143,9 @@ def register(config, name, email):
     email is type STRING\n
 
     Description:\n
-    This commmand adds new clients to the DB\n
+    This commmand adds new clients to the DB, starting state = 3\n
     Client_supp.csv saves new client info, assigns a client ID\n
-    Client_list.csv uses client ID to track relevent informtion\n
+    Client_list.csv uses client ID to track relevent informtion
 
     """
     hotel_path = helpers.get_hotel_path()
@@ -167,19 +167,23 @@ def register(config, name, email):
 @click.pass_obj
 def reserve_dates(config, client_id, room_type, start, end):
     """
-    Find ideal rooms based on criteria given
+    Find ideal rooms based on criteria given.
 
     Usage:\n
-    hotel reserve-dates client_id, room_type, start_date, end_date\n
+    hotel reserve-dates client_id room_type start_date end_date\n
 
     Arguments:\n
-    name is type STRING\n
-    email is type STRING\n
+    client_id is type INT\n
+    room_type is type INT\n
+    start_date is format %Y-%m-%d\n
+    end_date is format %Y-%m-%d\n
 
     Description:\n
-    This commmand adds new clients to the DB\n
-    Client_supp.csv saves new client info, assigns a client ID\n
-    Client_list.csv uses client ID to track relevent informtion\n
+    This commmand returns a list of rooms that match the criteria given\n
+    Rooms are ordered by the minimal disruption of free intervals\n
+    Creates new reservation in rooms/reservations/{best_room}.csv\n
+    Splits and adds new interverl in rooms/interval/{best_rom}.csv\n
+    Updates client_list.csv with new informtion, reserved state = 2
 
     """
     hotel_path = helpers.get_hotel_path()
@@ -217,7 +221,18 @@ def reserve_dates(config, client_id, room_type, start, end):
 @click.pass_obj
 def delete_reservation(config, client_id):
     """
-    Undo reserve_dates command
+    Undo reserve-dates command.
+
+    Usage:\n
+    hotel delete-reservation client_id\n
+
+    Arguments:\n
+    client_id is type INT\n
+
+    Description:\n
+    This commmand removes reservation in rooms/reservations/{best_room}.csv for client_id, state = 3\n
+    Removes and rejoins old interverl in rooms/interval/{best_rom}.csv\n
+    Updates client_list.csv with new informtion
 
     """
     hotel_path = helpers.get_hotel_path()
@@ -243,7 +258,18 @@ def delete_reservation(config, client_id):
 @click.pass_obj
 def check_in(config, client_id):
     """
-    Update client list after check-in
+    Update client list after check-in.
+
+    Usage:\n
+    hotel check-in client_id\n
+
+    Arguments:\n
+    client_id is type INT\n
+
+    Description:\n
+    This commmand pops reservation from reservation in rooms/reservations/{best_room}.csv\n
+    Popped reservation is updated in client_list.csv\n
+    State = 1
 
     """
     # Should verify booking is true!
@@ -266,7 +292,17 @@ def check_in(config, client_id):
 @click.pass_obj
 def check_out(config, client_id, paid):
     """
-    Update client list after check-out 
+    Update client list after check-out.
+
+    Usage:\n
+    hotel check-out client_id paid\n
+
+    Arguments:\n
+    client_id is type INT\n
+    paid is stype BOOL\n
+
+    Description:\n
+    This commmand updates client_list.csv with new informtion, state = 3
     """
     hotel_path = helpers.get_hotel_path()
     full_path = os.path.join(config.cwd_path, hotel_path)
@@ -281,7 +317,16 @@ def check_out(config, client_id, paid):
 @click.pass_obj
 def get_client_info(config, client_id):
     """
-    Print client info
+    Print client info.
+
+    Usage:\n
+    hotel get-client-info client_id\n
+
+    Arguments:\n
+    client_id is type INT\n
+
+    Description:\n
+    This commmand prints the info of client_id from client_list.csv
     """
     client_info = config.client_list.iloc[client_id]
     click.echo(client_info)
@@ -290,7 +335,16 @@ def get_client_info(config, client_id):
 @click.pass_obj
 def get_current_clients(config):
     """
-    Print all checked-in clients
+    Print all checked-in clients.
+
+    Usage:\n
+    hotel get-current-clients\n
+
+    Arguments:\n
+    None\n
+
+    Description:\n
+    This commmand prints the info of all checked-in clients (state = 1) from client_list.csv
     """
     curr_clients = config.client_list.loc[config.client_list['state'] == 1]
 
@@ -302,7 +356,17 @@ def get_current_clients(config):
 @click.pass_obj
 def get_client_id(config, name, email):
     """
-    Print client ID
+    Print client ID.
+
+    Usage:\n
+    hotel get-client-id name email\n
+
+    Arguments:\n
+    name is type STRING\n
+    email is type STRING\n
+
+    Description:\n
+    This commmand prints the client ID from client_supp.csv
     """
     df = config.client_supp.reset_index()
     
@@ -317,7 +381,17 @@ def get_client_id(config, name, email):
 @cli.command()
 def quit():
     """
-    Quit current session
+    Quit current session.
+
+    Usage:\n
+    hotel quit\n
+
+    Arguments:\n
+    None\n
+
+    Description:\n
+    This commmand ends the current session.\n
+    Moves the session.csv file to data/hotel_*/session.csv for storage
     """
 
     hotel_path = helpers.get_hotel_path()
@@ -330,7 +404,17 @@ def quit():
 @click.argument('hotel_path', type = click.Path())
 def begin(hotel_path):
     """
-    Continue from previous session
+    Continue from previous session.
+
+    Usage:\n
+    hotel begin data/hotel_*/\n
+
+    Arguments:\n
+    hotel_path is type PATH\n
+
+    Description:\n
+    This commmand starts a session.\n
+    Moves the session.csv file from data/hotel_*/session.csv to current working directory
     """
     hotel = hotel_path.split('/')[1]
 
