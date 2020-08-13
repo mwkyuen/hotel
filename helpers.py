@@ -16,9 +16,7 @@ def get_hotel_path():
     return line
 
 def get_reservations(r_path):
-
     num_files = os.listdir(r_path)
-    # reservations = {int(os.path.splitext(num)[0]): [] for num in num_files}
     reservations = pd.DataFrame()
 
     for file in num_files:
@@ -37,9 +35,7 @@ def get_reservations(r_path):
 
     return reservations
 
-
 def get_intervals(i_path):
-
     num_files = os.listdir(i_path)
     intervals = pd.DataFrame()
 
@@ -64,12 +60,9 @@ def get_intervals(i_path):
         df = df.rename(columns = {'end': room})
         intervals = pd.concat([intervals, df], axis = 1, sort=False) 
 
-    # df = pd.DataFrame.from_dict(intervals, orient='index')
-    # return df.transpose()
     return intervals
 
 def add_client_supp(client_supp, name, contact_info):
-
     temp_supp = pd.DataFrame({'name':[name],
                               'email':[contact_info]
                             }) 
@@ -77,7 +70,6 @@ def add_client_supp(client_supp, name, contact_info):
     return client_supp.append(temp_supp, ignore_index = True)
 
 def add_client_list(client_list, state, start, end, res_room, payment_due, paid, curr_room):
-
     temp_info = pd.DataFrame({'state':[state],
                               'start':[start],
                               'end':[end],
@@ -90,26 +82,22 @@ def add_client_list(client_list, state, start, end, res_room, payment_due, paid,
     return client_list.append(temp_info, ignore_index = True)
 
 def overwrite_client_supp(client_supp, full_path):
-
     client_supp = client_supp.rename_axis('client_id').reset_index()
     client_supp.to_csv(os.path.join(full_path, 'client_supp.csv'), index=False)
 
 def overwrite_client_list(client_list, full_path):
-
     client_list = client_list.rename_axis('client_id').reset_index()
     client_list.to_csv(os.path.join(full_path, 'client_list.csv'), index = False)
 
 def get_room_of_type(hotel, room_type):
-
     room_list = []
     for room in hotel['rooms']:
         if room['type'] == room_type:
             room_list.append(str(room['number']))
+    
     return room_list
 
-
 def get_room_number_optimized(intervals, start, end):
-    
     """
     Return list of available rooms, ordered by best room
     """
@@ -125,7 +113,9 @@ def get_room_number_optimized(intervals, start, end):
             return pd.Series(data = [None, None, None], index = x.index)
 
     df = df.apply(filter, axis = 1).dropna()
-    overlap = df.set_index('room')
+    overlap = df.set_index('room')  
+    room_order = get_smallest_left(overlap, start, end)
+
     ##################################################################
     # interval_overlap = []
     # for room_number in room_list:
@@ -135,16 +125,14 @@ def get_room_number_optimized(intervals, start, end):
     #     for index, value in sr.items():
     #         if index.date() < start.date() and end.date() < value:
     #             interval_overlap.append((index.date(), value.date()))
-    ###################################################################
+    ###################################################################    
     
-    room_order = get_smallest_left(overlap, start, end)
     return room_order.astype({'order': 'int64'})
 
 def get_smallest_left(overlap, start, end):
     """
     Return room_number sorted by smallest_section_remaining
     """
-
     smallest_remaining = pd.DataFrame({'room': overlap.index, 'order': ([None] * overlap.index.size)})
     smallest_remaining.set_index('room', inplace=True)
 
@@ -153,12 +141,8 @@ def get_smallest_left(overlap, start, end):
         left = start.date() - row['start'].date()
         right = row['end'].date() - end.date()
         if (left.days < right.days):
-            # print(type(left.days))
-            # print(type(index))
             smallest_remaining.loc[index, 'order'] = int(left.days)
         else:
-            # print(type(right.days))
-            # print(type(index))
             smallest_remaining.loc[index, 'order'] = int(right.days)
 
     return smallest_remaining.reset_index().sort_values(by=['order'])
@@ -167,14 +151,13 @@ def get_smallest_left(overlap, start, end):
 def get_payment(hotel, best_room):
     for room in hotel['rooms']:
         if room['number'] == int(best_room):
+            
             return room['cost']
         
 def add_reservations(reservations, room_number, client_id, start):    
-
     reservations.loc[start, str(room_number)] = client_id
 
 def add_intervals(intervals, room_number, start, end, hotel_path):
-
     old_intv = get_old_interval(intervals, room_number, start, end)
     new_intv = split_interval(old_intv, start, end)
     update_intervals(intervals, new_intv, room_number)
@@ -185,6 +168,7 @@ def get_old_interval(intervals, room_number, start, end):
     df = df.loc[mask]
     for index, value in df.items():
             if index.date() < start.date() and end.date() < value:
+                
                 return (index.date(), value.date())
 
 def split_interval(old_intv, start, end):
@@ -227,7 +211,6 @@ def remove_reservation_client_list(client_list, client_id):
     client_list.loc[client_id, 'state'] = 3
 
 def remove_reservations(reservations, res_start):    
-
     reservations.drop(datetime.strptime(res_start, '%Y-%m-%d'), inplace = True)
 
 def remove_intervals(intervals, start, end, room_number):
@@ -243,16 +226,13 @@ def remove_intervals(intervals, start, end, room_number):
     intervals.dropna(axis = 0, how = 'all', inplace = True)
 
 def checkin_client_list(client_list, client_id):
-
     client_list.loc[client_id, 'state'] = 1
     client_list.loc[client_id, 'curr_room'] = client_list.loc[client_id, 'reserved_room']
 
 def pop_reservation(reservations, res_start, room_number):
-
     reservations.loc[res_start, str(room_number)] = None
    
 def checkout_client_list(client_list, client_id, paid):
-
     client_list.loc[client_id, 'state'] = 3
     client_list.loc[client_id, 'start'] = None
     client_list.loc[client_id, 'end'] = None
@@ -272,8 +252,8 @@ def overwrite_intervals(intervals, script_dir, hotel_path, room_number):
         df.to_csv(file, header=False, index=True)
 
 def overwrite_reservations(reservations, script_dir, hotel_path, room_number):
-
     df = reservations[str(room_number)].dropna()
+    
     rooms_path = os.path.join(hotel_path, 'rooms/reservations')
     full_path = os.path.join(script_dir, rooms_path)
     file_name = str(room_number)  + '.csv'
