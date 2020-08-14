@@ -15,6 +15,17 @@ def get_hotel_path():
 
     return line
 
+def unique_client(client_supp, name, email):
+    df = client_supp.reset_index()
+
+    def find_id(x):
+        if x['name'] == name and x['email'] == email:
+            return x['client_id']
+
+    id_list = df.apply(find_id, axis = 1).dropna()
+
+    return id_list
+
 def get_reservations(r_path):
     num_files = os.listdir(r_path)
     reservations = pd.DataFrame()
@@ -253,7 +264,7 @@ def overwrite_intervals(intervals, script_dir, hotel_path, room_number):
 
 def overwrite_reservations(reservations, script_dir, hotel_path, room_number):
     df = reservations[str(room_number)].dropna()
-    
+
     rooms_path = os.path.join(hotel_path, 'rooms/reservations')
     full_path = os.path.join(script_dir, rooms_path)
     file_name = str(room_number)  + '.csv'
