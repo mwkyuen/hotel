@@ -6,6 +6,9 @@ setup(
 	py_modules = ['hotel'],
 	install_requires = [
 		'Click',
+		'pandas',
+		'numpy',
+		'jsonschema'
 	],
 	entry_points = '''
 		[console_scripts]
