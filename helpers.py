@@ -1,8 +1,6 @@
-import math
 from datetime import datetime, timedelta
 import pandas as pd
 import os
-import numpy
 import click
 import json
 import jsonschema
@@ -167,7 +165,19 @@ def get_room_of_type(hotel, room_type):
 
 def get_room_number_optimized(intervals, start, end):
     """
-    Return list of available rooms, ordered by best room
+    Finds the best available rooms given a prospective start & end date.
+
+    Arguments:
+    intervals is type pd.Dataframe(); DatetimeIndex (start), rooms as columns, Datetime (end) as values
+    start is type Datetime
+    end is type Datetime
+
+    Return:
+    An ordered list of available rooms
+
+    Description:
+    Intervals contain all the availibility periods of each room, (start, end) represent a prospective new reservation.
+    This function checks each availibility period to determine the interval that is minimally disrupted (see get_smallest_left())
     """
     mask = (intervals.index <= start) 
     df = intervals[mask].stack().swaplevel(0, 1).reset_index()
@@ -175,31 +185,32 @@ def get_room_number_optimized(intervals, start, end):
 
     def filter(x):
         if (x['start'].date() < start.date() and end.date() < x['end'].date()):
-            # return pd.DataFrame(x)
             return x
         else:
             return pd.Series(data = [None, None, None], index = x.index)
 
     df = df.apply(filter, axis = 1).dropna()
     overlap = df.set_index('room')  
-    room_order = get_smallest_left(overlap, start, end)
-
-    ##################################################################
-    # interval_overlap = []
-    # for room_number in room_list:
-    #     mask = (df.index <= start) 
-    #     df = df.loc[mask]
-    #     sr = df[str(room_number)].dropna()
-    #     for index, value in sr.items():
-    #         if index.date() < start.date() and end.date() < value:
-    #             interval_overlap.append((index.date(), value.date()))
-    ###################################################################    
+    room_order = get_smallest_left(overlap, start, end)  
     
     return room_order.astype({'order': 'int64'})
 
 def get_smallest_left(overlap, start, end):
     """
-    Return room_number sorted by smallest_section_remaining
+    Determines the amount of disruption of each interval given a prospective start & end date.
+
+    Arguments:
+    overlap is type pd.Dataframe(); rooms as index, start and end columns, values as Datetime
+    start is type Datetime
+    end is type Datetime
+
+    Return:
+    Return room_number sorted by smallest disruption
+
+    Description:
+    Overlap represent the single availibility periods of each room which overlaps with the prospective new reservation (start, end).
+    Disruption is the number of days leftover from the overlap after inserting the prospective reservation
+    This function calculates for each overlap the amount of disruption.    
     """
     smallest_remaining = pd.DataFrame({'room': overlap.index, 'order': ([None] * overlap.index.size)})
     smallest_remaining.set_index('room', inplace=True)

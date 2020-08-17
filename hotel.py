@@ -135,6 +135,7 @@ def initialize(hotel_file):
     if os.path.isfile('session.csv'):
         click.echo('A session is alr in progress. Please verify session.')
         raise click.Abort()
+    
     elif helpers.validate_json(hotel_file):
         click.echo('Initializing...')
 
