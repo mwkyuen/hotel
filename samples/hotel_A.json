@@ -1,27 +1,23 @@
 {
-	"hotel_name":"A",
-	"isFull":false,
-	"initialized":false,
-	"address":{"streetAddress":"12 3nd Street",
-			   "city":"New York",
-			   "state":"NY",
-			   "postalCode":"10021-3100"},
-	"phoneNumber":"212 555-1234",
-	"email":"a_hotel@gmail.com",
-	"rooms":[
-				{"number":1,
-				 "type":1,
-				 "cost":10
-				},
-
-				{"number":2,
-				 "type":1,
-				 "cost":10
-				},
-
-				{"number":3,
-				 "type":1,
-				 "cost":10
-				}
-			]
+    "hotel_name":"A",
+    "address":{"streetAddress":"12 3nd Street",
+               "city":"New York",
+               "state":"NY",
+               "postalCode":"10021-3100"},
+    "phoneNumber":"212 555-1234",
+    "email":"a_hotel@gmail.com",
+    "rooms":[
+                {"number":1,
+                 "type":1,
+                 "cost":10
+                },
+                {"number":2,
+                 "type":1,
+                 "cost":10
+                },
+                {"number":3,
+                 "type":1,
+                 "cost":10
+                }
+            ]
 }

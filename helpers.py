@@ -3,6 +3,63 @@ from datetime import datetime, timedelta
 import pandas as pd
 import os
 import numpy
+import click
+import json
+import jsonschema
+
+def validate_json(hotel_json):
+    schema = {  'type': 'object',
+                'properties': {
+                    'hotel_name': {
+                        'type': 'string',
+                        'description': 'Name of hotel'
+                    },
+                    'rooms': {
+                        'type': 'array',
+                        'items': {'$ref': '#/definitions/room'}
+                    }
+                },
+                'definitions': {
+                    'room': {
+                        'type': 'object',
+                        'required': ['number', 'type', 'cost'],
+                        'properties': {
+                            'number': {
+                                'type': 'integer',
+                                'description': 'Room number'
+                            },
+                            'type': {
+                                'type': 'integer',
+                                'description': 'Room type'
+                            },
+                            'cost': {
+                                'type': 'integer',
+                                'description': 'Cost of room per night'
+                            }
+                        }
+                    }
+                },
+                'required': ['hotel_name', 'rooms']
+    }   
+
+    try:
+        f = open(hotel_json)
+        datum = json.load(f)
+        jsonschema.validate(datum, schema)
+        return True
+
+    except jsonschema.exceptions.ValidationError as e:
+        click.echo(f"well-formed but invalid JSON: {e}")
+        return False
+
+    except json.decoder.JSONDecodeError as e:
+        click.echo(f"poorly-formed text, not JSON: {e}")
+        return False
+
+def handle_session():
+    if not os.path.exists('session.csv'):
+        click.echo('No current session.')
+        raise click.Abort()
 
 def create_temp(hotel_name):
     hotel_dir = 'data/hotel_' + hotel_name + '\n'

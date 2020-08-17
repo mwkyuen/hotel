@@ -3,6 +3,7 @@ import pandas as pd
 import helpers
 import os
 import shutil
+import fnmatch 
 # import sqlite3
 
 
@@ -45,14 +46,61 @@ def cli(ctx):
     Hello, I am Jeeves, the hotel concierge. How can I help you?
     """
 
-    if not os.path.exists('session.csv'):
-        click.echo('No session in progress. Please run initialize/ Begin command')
-
-    else:
+    if os.path.isfile('session.csv'):
         hotel_path = helpers.get_hotel_path()
-        click.echo('Continuing session for Hotel ' + hotel_path.lstrip('data/hotel_'))
+        alphabet = hotel_path.lstrip('data/hotel_')
+        click.echo(f'Session for Hotel {alphabet} is in progress')
         ctx.obj = Config(hotel_path)
+
+@cli.command()
+@click.argument('hotel_session', type = click.Path())
+def begin(hotel_session):
+    """
+    Continue from previous session.
+
+    Usage:\n
+    hotel begin data/hotel_*/session.csv\n
+
+    Arguments:\n
+    hotel_session is filepath to the session.csv of the hotel of interest\n
+
+    Description:\n
+    This commmand starts a session.\n
+    Moves the session.csv file from data/hotel_*/ to current working directory
+    """
+    if os.path.isfile('session.csv'):
+        click.echo('A session is alr in progress. Please verify session.')
+        raise click.Abort()
+    elif fnmatch.fnmatch(hotel_session, '*/session.csv'):
+        hotel = hotel_session.split('/')[1]
+        shutil.move(hotel_session, os.getcwd())
+        click.echo(f'The session for {hotel} is now open!')
+    else:
+        click.echo('The file you have chosen is not a valid session file')
+
+@cli.command()
+def quit():
+    """
+    Quit current session.
+
+    Usage:\n
+    hotel quit\n
+
+    Arguments:\n
+    None\n
+
+    Description:\n
+    This commmand ends the current session.\n
+    Moves the session.csv file to data/hotel_*/session.csv for storage
+    """
+    helpers.handle_session()
+
+    hotel_path = helpers.get_hotel_path()
+    hotel = hotel_path.split('/')[1]
+    shutil.move('session.csv', hotel_path)
+    click.echo(f'The session for {hotel} is now closed.')
     
+
 @cli.command()
 @click.argument('hotel_file', type = click.Path())
 def initialize(hotel_file):
@@ -85,8 +133,9 @@ def initialize(hotel_file):
     """
     
     if os.path.isfile('session.csv'):
-        print('Session already exists. Please Quit before use') 
-    else:
+        click.echo('A session is alr in progress. Please verify session.')
+        raise click.Abort()
+    elif helpers.validate_json(hotel_file):
         click.echo('Initializing...')
 
         script_dir = os.path.dirname(__file__)
@@ -148,6 +197,8 @@ def register(config, name, email):
     Client_list.csv uses client ID to track relevent informtion
 
     """
+    helpers.handle_session()
+
     id_list = helpers.unique_client(config.client_supp, name, email)
 
     if id_list.empty:
@@ -192,6 +243,7 @@ def reserve_dates(config, client_id, room_type, start, end):
     Updates client_list.csv with new informtion, reserved state = 2
 
     """
+    helpers.handle_session()
 
     if client_id in config.client_list.index:
 
@@ -249,6 +301,8 @@ def delete_reservation(config, client_id):
     Updates client_list.csv with new informtion
 
     """
+    helpers.handle_session()
+
     if client_id in config.client_list.index:
 
         if config.client_list.loc[client_id, 'state'] == 2:
@@ -295,7 +349,7 @@ def check_in(config, client_id):
     State = 1
 
     """
-    # Should verify booking is true!
+    helpers.handle_session()
 
     if client_id in config.client_list.index:
 
@@ -336,6 +390,8 @@ def check_out(config, client_id, paid):
     Description:\n
     This commmand updates client_list.csv with new informtion, state = 3
     """
+    helpers.handle_session()
+
     if client_id in config.client_list.index:
 
         if config.client_list.loc[client_id, 'state'] == 1:
@@ -369,6 +425,8 @@ def get_client_info(config, client_id):
     Description:\n
     This commmand prints the info of client_id from client_list.csv
     """
+    helpers.handle_session()
+
     if client_id in config.client_list.index:
 
         client_info = config.client_list.iloc[client_id]
@@ -391,13 +449,14 @@ def get_current_clients(config, state):
     state is type INT\n
 
     Description:\n
-    This commmand prints the info of all clients (based on state values) from client_list.csv
+    This commmand prints the info of all clients (based on state values) from client_list.csv\n
 
     States:\n
     registered client = 1\n
     client with reservation = 2\n
-    client while checked-in = 3\n
+    client while checked-in = 3
     """
+    helpers.handle_session()
     curr_clients = config.client_list.loc[config.client_list['state'] == state]
     click.echo(curr_clients)
 
@@ -419,6 +478,7 @@ def get_client_id(config, name, email):
     Description:\n
     This commmand prints the client ID from client_supp.csv
     """
+    helpers.handle_session()
 
     id_list = helpers.unique_client(config.client_supp, name, email)
     if id_list.empty:
@@ -427,49 +487,6 @@ def get_client_id(config, name, email):
     else:
         client_id = int(id_list.squeeze())
         click.echo(f'The client ID for {name} is {client_id}')
-
-@cli.command()
-def quit():
-    """
-    Quit current session.
-
-    Usage:\n
-    hotel quit\n
-
-    Arguments:\n
-    None\n
-
-    Description:\n
-    This commmand ends the current session.\n
-    Moves the session.csv file to data/hotel_*/session.csv for storage
-    """
-
-    hotel_path = helpers.get_hotel_path()
-    hotel = hotel_path.split('/')[1]
-
-    shutil.move('session.csv', hotel_path)
-    click.echo(f'The session for {hotel} is now closed.')
-
-@cli.command()
-@click.argument('hotel_session', type = click.Path())
-def begin(hotel_session):
-    """
-    Continue from previous session.
-
-    Usage:\n
-    hotel begin data/hotel_*/session.csv\n
-
-    Arguments:\n
-    hotel_session is filepath to the session.csv of the hotel of interest\n
-
-    Description:\n
-    This commmand starts a session.\n
-    Moves the session.csv file from data/hotel_*/ to current working directory
-    """
-    hotel = hotel_session.split('/')[1]
-    
-    shutil.move(hotel_session, os.getcwd())
-    click.echo(f'The session for {hotel} is now open!')
 
 # @cli.command()
 # @click.pass_obj

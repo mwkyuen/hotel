@@ -1,7 +1,5 @@
 {
   "hotel_name": "B",
-  "isFull": false,
-  "isInitialized": false,
   "address": {
     "streetAddress": "56 7nd Street",
     "city": "New York",
@@ -15,7 +13,6 @@
       "number":1,
       "type":1,
       "cost":10
-
     },
     {
       "number":2,
