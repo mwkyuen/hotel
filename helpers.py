@@ -235,6 +235,7 @@ def get_payment(hotel, best_room):
         
 def add_reservations(reservations, room_number, client_id, start):    
     reservations.loc[start, str(room_number)] = client_id
+    reservations.sort_index(inplace = True)
 
 def add_intervals(intervals, room_number, start, end, hotel_path):
     old_intv = get_old_interval(intervals, room_number, start, end)
