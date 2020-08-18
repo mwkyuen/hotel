@@ -43,7 +43,7 @@ class Config(object):
 @click.pass_context
 def cli(ctx):
     """
-    Hello, I am Jeeves, the hotel concierge. How can I help you?
+    Hello, I am Jeeves, the hotel concierge. How may I help you?
     """
 
     if os.path.isfile('session.csv'):
