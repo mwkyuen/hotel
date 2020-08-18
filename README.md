@@ -121,19 +121,5 @@ hotel get-client-id s.beast sexy.beast@gmail.com #Check client ID
 
 hotel get-client-id a.possum awesome.possum@gmail.com #Check client ID
 
-hotel reserve-dates 1 2 2020-09-14 2020-09-18 #Reserve dates for Client_1, room Type_2
 
-hotel reserve-dates 0 3 2020-08-22 2020-08-28 #Reserve dates for Client_0, room Type_3
-
-hotel reserve-dates 2 3 2020-08-22 2020-08-28 #Reserve dates for Client_2, room Type_3
-
-hotel get-all-clients #Print all clients
-
-hotel delete-reservation 2 #Delete reservation for Client_2
-
-hotel get-some-clients 3 #Print clients which are in State_3
-
-hotel get-one-client 2 #Print the details of Client_2
-
-hotel quit #Close current session
 ```
