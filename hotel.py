@@ -142,7 +142,9 @@ def initialize(hotel_file):
         script_dir = os.path.dirname(__file__)
 
         hotel_raw = pd.read_json(hotel_file, typ='series')
-        dir_path = 'data/hotel_' + hotel_raw['hotel_name']
+        hotel_name = hotel_raw['hotel_name']
+        
+        dir_path = 'data/hotel_' + hotel_name
         os.makedirs(dir_path + '/rooms') 
         shutil.move(hotel_file, os.path.join(dir_path, 'hotel.json'))
 
@@ -172,9 +174,9 @@ def initialize(hotel_file):
                 out_file.write(INIT_INTERVAL_INFO)
 
 
-        helpers.create_temp(hotel_raw['hotel_name'])
+        helpers.create_temp(hotel_name)
 
-        click.echo('Initialization complete.')
+        click.echo(f'Initialization complete. The session for Hotel {hotel_name} is ready for use.')
 
 
 @cli.command()
