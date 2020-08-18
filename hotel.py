@@ -143,7 +143,7 @@ def initialize(hotel_file):
 
         hotel_raw = pd.read_json(hotel_file, typ='series')
         hotel_name = hotel_raw['hotel_name']
-        
+
         dir_path = 'data/hotel_' + hotel_name
         os.makedirs(dir_path + '/rooms') 
         shutil.move(hotel_file, os.path.join(dir_path, 'hotel.json'))
@@ -415,12 +415,12 @@ def check_out(config, client_id, paid):
 @cli.command()
 @click.argument('client_id', type = click.INT)
 @click.pass_obj
-def get_client_info(config, client_id):
+def get_one_client(config, client_id):
     """
-    Print client info.
+    Print client info from a single client.
 
     Usage:\n
-    hotel get-client-info client_id\n
+    hotel get_one_client client_id\n
 
     Arguments:\n
     client_id is type INT\n
@@ -441,18 +441,18 @@ def get_client_info(config, client_id):
 @cli.command()
 @click.argument('state', type = click.INT)
 @click.pass_obj
-def get_current_clients(config, state):
+def get_some_clients(config, state):
     """
-    Print all checked-in clients.
+    Print clients with state = state.
 
     Usage:\n
-    hotel get-current-clients state\n
+    hotel get-some-clients state\n
 
     Arguments:\n
     state is type INT\n
 
     Description:\n
-    This commmand prints the info of all clients (based on state values) from client_list.csv\n
+    This commmand prints the info of clients (based on state values) from client_list.csv\n
 
     States:\n
     registered client = 1\n
@@ -462,6 +462,27 @@ def get_current_clients(config, state):
     helpers.handle_session()
     curr_clients = config.client_list.loc[config.client_list['state'] == state]
     click.echo(curr_clients)
+
+@cli.command()
+@click.pass_obj
+def get_all_clients(config):
+    """
+    Print all clients in client_list.
+
+    Usage:\n
+    hotel get-all-clients\n
+
+    Arguments:\n
+    None\n
+
+    Description:\n
+    This commmand prints the info of all clients from client_list.csv\n
+
+    """
+
+    helpers.handle_session()
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        click.echo(config.client_list)
 
 @cli.command()
 @click.argument('name', type = click.STRING)
@@ -490,6 +511,8 @@ def get_client_id(config, name, email):
     else:
         client_id = int(id_list.squeeze())
         click.echo(f'The client ID for {name} is {client_id}')
+
+
 
 # @cli.command()
 # @click.pass_obj
