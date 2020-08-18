@@ -14,7 +14,7 @@ You are now READY to proceed!
 
 ## Description
 
-The Hotel Concierge Library comes with 11 functions. A general description of each function can be viewed using the command `hotel --help`. Moreover, a more detailed description of each function can be viewed by using the command `hotel COMMAND --help`.
+The Hotel Concierge Library comes with 12 functions. A general description of each function can be viewed using the command `hotel --help`. Moreover, a more detailed description of each function can be viewed by using the command `hotel COMMAND --help`.
 
 #### Initialize & Session information
 
@@ -96,11 +96,11 @@ cp samples/hotel_B.json ./ #Copy a sample hotel to your hotel directory
 
 hotel initialize hotel_B.json #Initialize, creating new directories and starting new session for Hotel B
 
-hotel register t.king tiger.king@gmail.com #Register new client 1
+hotel register t.king tiger.king@gmail.com #Register new client
 
 hotel get-client-id t.king tiger.king@gmail.com #Check client ID
 
-hotel reserve-dates 0 3 2020-08-22 2020-08-28 #Reserve dates for Client_0, room type 3
+hotel reserve-dates 0 3 2020-08-22 2020-08-28 #Reserve dates for Client_0, room Type_3
 
 hotel check-in 0 #Check in for Client_0
 
@@ -113,9 +113,27 @@ hotel quit #Close current session
 ```
 hotel begin data/hotel_B/session.csv #Open session for Hotel B
 
-hotel register s.beast sexy.beast@gmail.com #Register new client 2
+hotel register s.beast sexy.beast@gmail.com #Register new client
 
-hotel register a.possum awesome.possum@gmail.com #Register new client 3
+hotel register a.possum awesome.possum@gmail.com #Register new client
 
+hotel get-client-id s.beast sexy.beast@gmail.com #Check client ID
 
+hotel get-client-id a.possum awesome.possum@gmail.com #Check client ID
+
+hotel reserve-dates 1 2 2020-09-14 2020-09-18 #Reserve dates for Client_1, room Type_2
+
+hotel reserve-dates 0 3 2020-08-22 2020-08-28 #Reserve dates for Client_0, room Type_3
+
+hotel reserve-dates 2 3 2020-08-22 2020-08-28 #Reserve dates for Client_2, room Type_3
+
+hotel get-all-clients #Print all clients
+
+hotel delete-reservation 2 #Delete reservation for Client_2
+
+hotel get-some-clients 3 #Print clients which are in State_3
+
+hotel get-one-client 2 #Print the details of Client_2
+
+hotel quit #Close current session
 ```
