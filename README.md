@@ -18,7 +18,7 @@ You are now READY to proceed!
 
 The Hotel Concierge Library comes with 12 functions. A general description of each function can be viewed using the command `hotel --help`. Moreover, a more detailed description of each function can be viewed by using the command `hotel COMMAND --help`.
 
-#### Initialize & Session information
+### Initialize & Session information
 
 In order to get started, it is necessary to first initialize a Hotel object which the library will be working with. This initialization also sets up a `session.csv` file. The Concierge is able to handle multiple hotels, and the `session.csv` file keeps track of which hotel is currently being administered. Once a session is over the command `hotel quit` can be used to close the Hotel Concierge. Before new commands can be accepted, the command `hotel begin /path/to/session.csv` will need to be called, pointing to the hotel session to be administered.
 
@@ -66,7 +66,7 @@ The schema dictates that the hotels have at least a name and an array of rooms. 
 
 The Initialize command creates a new `data/hotel_{name}` directory which will hold all the information of the hotel state. Inbetween sessions, the `session.csv` file will also be stored under this directory.
 
-#### Clients
+### Clients
 The clients of each hotels are stored in the `client_list.csv` as a client_list object, and the `client_supp.csv` files as a client_supp object. Each client is assigned a unique client ID which is used to index additional information about the clients. Each client can exist in three possible states. 
 
 * State 1 is a client who is currently checked-in at the hotel. 
@@ -77,7 +77,7 @@ As commands are issued to the Concierge the client objects and the relevant `*.c
 
 ![client_state_change](/images/client_state.png)
 
-#### Rooms
+### Rooms
 Room of the hotel are represented with Reservations and Intervals objects.
 
 Each room has a list of incoming reservations, which will be removed once a client has either checked-in or decided to cancel the reservation. The Concierge holds the Reservations object as a sorted pandas Dataframe with DatetimeIndex (start), rooms as columns names, and client ID as values. Values are sorted by DatetimeIndex (i.e the next reservation for Room X will be at the top)
@@ -94,7 +94,7 @@ In `samples/`, Hotel A has three rooms, all of type 1, while Hotel B has six roo
 
 Room types represent the luxury and amenities provided to each room 
 
-#### Initializing new hotel
+### Initializing new hotel
 ```
 cp samples/hotel_B.json ./ #Copy a sample hotel to your hotel directory
 
@@ -108,7 +108,7 @@ hotel reserve-dates 0 3 2020-08-22 2020-08-28 #Reserve dates for Client_0, room 
 
 hotel quit #Close current session
 ```
-#### Starting from a previous session
+### Starting from a previous session
 
 ```
 hotel begin data/hotel_B/session.csv #Open session for Hotel B
