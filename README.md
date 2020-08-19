@@ -2,13 +2,13 @@
 
 ## Setup
 
-1) Clone the repo: `git clone https://github.com/mwkyuen/hotel.git`
+Clone the repo: `git clone https://github.com/mwkyuen/hotel.git`
 
-2) Enter the repo directory: `cd hotel/`
+Enter the repo directory: `cd hotel/`
 
-3) Set up and launch your virtual environment (optional). Instructions can be found [here.](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/)
+Set up and launch your virtual environment (optional). Instructions can be found [here.](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/)
 
-4) Install the Hotel Concierge library by running: `pip install .`
+Install the Hotel Concierge library by running: `pip install .`
 
 **The current working directory should be /path/to/hotel/**
 
