@@ -6,13 +6,23 @@ import shutil
 import fnmatch 
 # import sqlite3
 
-
 INIT_CLIENT_INFO = 'client_id,state,start,end,reserved_room,payment_due,paid,curr_room\n'
 INIT_CLIENT_SUPP = 'client_id,name,email\n'
 INIT_RESERVATION_INFO = 'start,client_id\n'
 INIT_INTERVAL_INFO = 'start,end\n,'
 
 class Config(object):
+    """
+    Object passed throughout the CLI program. It has six components:
+    1) Current working directoy (/path/to/hotel)
+    2) Client list
+    3) Client Supplementary info
+    4) Hotel
+    5) Reservations dataframe
+    6) Intervals dataframe
+
+    Not applicable in Begin, Quit, Initialize commands
+    """
 
     def __init__(self, hotel_path):
 
