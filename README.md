@@ -16,7 +16,19 @@ You are now READY to proceed!
 
 ## Description
 
-The Hotel Concierge Library comes with 12 functions. A general description of each function can be viewed using the command `hotel --help`. Moreover, a more detailed description of each function can be viewed by using the command `hotel COMMAND --help`.
+The Hotel Concierge Library is a Command Line Interface (CLI) program with 12 functions. A general description of each function can be viewed using the command `hotel --help`. Moreover, a more detailed description of each function can be viewed by using the command `hotel FUNCTION --help`.
+
+### Config
+
+Object passed throughout the CLI program. It has six components:
+1. Current working directoy (/path/to/hotel)
+2. Client list
+3. Client Supplementary info
+4. Hotel
+5. Reservations dataframe
+6. Intervals dataframe
+
+Not applicable in Begin, Quit, Initialize functions
 
 ### Initialize & Session information
 
