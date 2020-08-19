@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import pandas as pd
+import numpy as np
 import os
 import click
 import json
@@ -300,7 +301,7 @@ def remove_intervals(intervals, start, end, room_number):
     new_intv_start = intervals.loc[intervals[str(room_number)] == old_intv_end].index.date[0]
     new_intv_end = intervals.loc[old_intv_start, str(room_number)]
 
-    intervals.loc[new_intv_start, str(room_number)] = new_intv_end
+    intervals.loc[np.datetime64(new_intv_start), str(room_number)] = new_intv_end
     intervals.loc[old_intv_start, str(room_number)] = None
 
     intervals.dropna(axis = 0, how = 'all', inplace = True)
