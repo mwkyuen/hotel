@@ -73,7 +73,7 @@ The clients of each hotels are stored in the `client_list.csv` as a client_list 
 * State 2 is a client with an existing reservation at the hotel.
 * State 3 is a client who has neither a reservation nor currently checked-in (default state)
 
-As commands are issued to the Concierge the client objects are updated. 
+As commands are issued to the Concierge the client objects and the relevant `*.csv` files are updated. 
 
 ![client_state_change](/images/client_state.png)
 
@@ -83,6 +83,8 @@ Room of the hotel are represented with Reservations and Intervals objects.
 Each room has a list of incoming reservations, which will be removed once a client has either checked-in or decided to cancel the reservation. The Concierge holds the Reservations object as a sorted pandas Dataframe with DatetimeIndex (start), rooms as columns names, and client ID as values. Values are sorted by DatetimeIndex (i.e the next reservation for Room X will be at the top)
 
 Each room also has a list of available intervals, to which a new reservation can be added to, splicing the interval into two remaining interval segments. The Concierge holds the Intervals object as a sorted pandas Dataframe with DatetimeIndex (start), rooms as column names, and Datatime (end) as values.
+
+As commands are issued to the Concierge the room objects and the relevant `*.csv` files are updated. 
 
 ## Using the Hotel Concierge (example)
 
