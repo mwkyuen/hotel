@@ -102,7 +102,7 @@ As commands are issued to the Concierge the room objects and the relevant `*.csv
 
 First setup the Hotel Concierge library as detailed in Setup above.
 
-In `samples/`, Hotel A has three rooms, all of type 1, while Hotel B has six rooms, room 1-2 of type 1, room 3-4 of type 2, and room 5-6 of type 3
+There are sample hotels located in `samples/hotel_*.json`. Hotel A has three rooms, all of Type 1. Hotel B has six rooms, Rooms 1 & 2 of Type 1, Rooms 3 & 4 of Type 2, and Rooms 5 & 6 of Type 3
 
 Room types represent the luxury and amenities provided to each room 
 
