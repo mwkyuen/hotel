@@ -3,40 +3,44 @@ import pandas as pd
 import helpers
 import os
 import shutil
-import fnmatch 
+import fnmatch
+
 # import sqlite3
 
-INIT_CLIENT_INFO = 'client_id,state,start,end,reserved_room,payment_due,paid,curr_room\n'
-INIT_CLIENT_SUPP = 'client_id,name,email\n'
-INIT_RESERVATION_INFO = 'start,client_id\n'
-INIT_INTERVAL_INFO = 'start,end\n,'
+INIT_CLIENT_INFO = (
+    "client_id,state,start,end,reserved_room,payment_due,paid,curr_room\n"
+)
+INIT_CLIENT_SUPP = "client_id,name,email\n"
+INIT_RESERVATION_INFO = "start,client_id\n"
+INIT_INTERVAL_INFO = "start,end\n,"
+
 
 class Config(object):
-
     def __init__(self, hotel_path):
 
         cwd_path = os.path.dirname(__file__)
         self.cwd_path = cwd_path
 
-        rel_path = hotel_path + '/client_list.csv'
+        rel_path = hotel_path + "/client_list.csv"
         fp = os.path.join(cwd_path, rel_path)
-        self.client_list = pd.read_csv(fp, index_col = 'client_id')
+        self.client_list = pd.read_csv(fp, index_col="client_id")
 
-        rel_path = hotel_path + '/client_supp.csv'
+        rel_path = hotel_path + "/client_supp.csv"
         fp = os.path.join(cwd_path, rel_path)
-        self.client_supp = pd.read_csv(fp, index_col = 'client_id')
+        self.client_supp = pd.read_csv(fp, index_col="client_id")
 
-        rel_path = hotel_path + '/hotel.json'
+        rel_path = hotel_path + "/hotel.json"
         fp = os.path.join(cwd_path, rel_path)
-        self.hotel = pd.read_json(fp, typ='series')
-            
-        rel_path = hotel_path + '/rooms/reservations'
+        self.hotel = pd.read_json(fp, typ="series")
+
+        rel_path = hotel_path + "/rooms/reservations"
         fp = os.path.join(cwd_path, rel_path)
         self.reservations = helpers.get_reservations(fp)
 
-        rel_path = hotel_path + '/rooms/intervals'
+        rel_path = hotel_path + "/rooms/intervals"
         fp = os.path.join(cwd_path, rel_path)
         self.intervals = helpers.get_intervals(fp)
+
 
 @click.group()
 @click.pass_context
@@ -45,14 +49,15 @@ def cli(ctx):
     Hello, I am Jeeves, the hotel concierge. How may I help you?
     """
 
-    if os.path.isfile('session.csv'):
+    if os.path.isfile("session.csv"):
         hotel_path = helpers.get_hotel_path()
-        alphabet = hotel_path.lstrip('data/hotel_')
-        click.echo(f'Session for Hotel {alphabet} is in progress')
+        alphabet = hotel_path.lstrip("data/hotel_")
+        click.echo(f"Session for Hotel {alphabet} is in progress")
         ctx.obj = Config(hotel_path)
 
+
 @cli.command()
-@click.argument('hotel_session', type = click.Path())
+@click.argument("hotel_session", type=click.Path())
 def begin(hotel_session):
     """
     Continue from previous session.
@@ -67,15 +72,16 @@ def begin(hotel_session):
     This commmand starts a session.\n
     Moves the session.csv file from data/hotel_*/ to current working directory
     """
-    if os.path.isfile('session.csv'):
-        click.echo('A session is alr in progress. Please verify session.')
+    if os.path.isfile("session.csv"):
+        click.echo("A session is alr in progress. Please verify session.")
         raise click.Abort()
-    elif fnmatch.fnmatch(hotel_session, '*/session.csv'):
-        hotel = hotel_session.split('/')[1]
+    elif fnmatch.fnmatch(hotel_session, "*/session.csv"):
+        hotel = hotel_session.split("/")[1]
         shutil.move(hotel_session, os.getcwd())
-        click.echo(f'The session for {hotel} is now open!')
+        click.echo(f"The session for {hotel} is now open!")
     else:
-        click.echo('The file you have chosen is not a valid session file')
+        click.echo("The file you have chosen is not a valid session file")
+
 
 @cli.command()
 def quit():
@@ -95,13 +101,13 @@ def quit():
     helpers.handle_session()
 
     hotel_path = helpers.get_hotel_path()
-    hotel = hotel_path.split('/')[1]
-    shutil.move('session.csv', hotel_path)
-    click.echo(f'The session for {hotel} is now closed.')
-    
+    hotel = hotel_path.split("/")[1]
+    shutil.move("session.csv", hotel_path)
+    click.echo(f"The session for {hotel} is now closed.")
+
 
 @cli.command()
-@click.argument('hotel_file', type = click.Path())
+@click.argument("hotel_file", type=click.Path())
 def initialize(hotel_file):
     """
     Initializes new hotel.json, starts new session.
@@ -130,57 +136,58 @@ def initialize(hotel_file):
     }
 
     """
-    
-    if os.path.isfile('session.csv'):
-        click.echo('A session is alr in progress. Please verify session.')
+
+    if os.path.isfile("session.csv"):
+        click.echo("A session is alr in progress. Please verify session.")
         raise click.Abort()
-    
+
     elif helpers.validate_json(hotel_file):
-        click.echo('Initializing...')
+        click.echo("Initializing...")
 
         script_dir = os.path.dirname(__file__)
 
-        hotel_raw = pd.read_json(hotel_file, typ='series')
-        hotel_name = hotel_raw['hotel_name']
+        hotel_raw = pd.read_json(hotel_file, typ="series")
+        hotel_name = hotel_raw["hotel_name"]
 
-        dir_path = 'data/hotel_' + hotel_name
-        os.makedirs(dir_path + '/rooms') 
-        shutil.move(hotel_file, os.path.join(dir_path, 'hotel.json'))
+        dir_path = "data/hotel_" + hotel_name
+        os.makedirs(dir_path + "/rooms")
+        shutil.move(hotel_file, os.path.join(dir_path, "hotel.json"))
 
-        rel_path = dir_path + '/client_list.csv'
+        rel_path = dir_path + "/client_list.csv"
         fp = os.path.join(script_dir, rel_path)
-        with open(fp, 'w') as out_file:
+        with open(fp, "w") as out_file:
             out_file.write(INIT_CLIENT_INFO)
 
-        rel_path = dir_path + '/client_supp.csv'
+        rel_path = dir_path + "/client_supp.csv"
         fp = os.path.join(script_dir, rel_path)
-        with open(fp, 'w') as out_file:
+        with open(fp, "w") as out_file:
             out_file.write(INIT_CLIENT_SUPP)
 
-        os.mkdir(dir_path + '/rooms/reservations') 
-        os.mkdir(dir_path + '/rooms/intervals')
+        os.mkdir(dir_path + "/rooms/reservations")
+        os.mkdir(dir_path + "/rooms/intervals")
 
-        for room in hotel_raw['rooms']:
-            
-            rel_path = dir_path + '/rooms/reservations/' + str(room['number']) + '.csv'
+        for room in hotel_raw["rooms"]:
+
+            rel_path = dir_path + "/rooms/reservations/" + str(room["number"]) + ".csv"
             fp = os.path.join(script_dir, rel_path)
-            with open(fp, 'w') as out_file:
+            with open(fp, "w") as out_file:
                 out_file.write(INIT_RESERVATION_INFO)
 
-            rel_path = dir_path + '/rooms/intervals/' + str(room['number']) + '.csv'
+            rel_path = dir_path + "/rooms/intervals/" + str(room["number"]) + ".csv"
             fp = os.path.join(script_dir, rel_path)
-            with open(fp, 'w') as out_file:
+            with open(fp, "w") as out_file:
                 out_file.write(INIT_INTERVAL_INFO)
-
 
         helpers.create_temp(hotel_name)
 
-        click.echo(f'Initialization complete. The session for Hotel {hotel_name} is ready for use.')
+        click.echo(
+            f"Initialization complete. The session for Hotel {hotel_name} is ready for use."
+        )
 
 
 @cli.command()
-@click.argument('name', type = click.STRING)
-@click.argument('email', type = click.STRING)
+@click.argument("name", type=click.STRING)
+@click.argument("email", type=click.STRING)
 @click.pass_obj
 def register(config, name, email):
     """
@@ -210,19 +217,22 @@ def register(config, name, email):
         config.client_supp = helpers.add_client_supp(config.client_supp, name, email)
         helpers.overwrite_client_supp(config.client_supp, full_path)
 
-        config.client_list = helpers.add_client_list(config.client_list, 3, None, None, -1, None, False, -1)
+        config.client_list = helpers.add_client_list(
+            config.client_list, 3, None, None, -1, None, False, -1
+        )
         helpers.overwrite_client_list(config.client_list, full_path)
 
-        click.echo('Registration successful!')
-    
+        click.echo("Registration successful!")
+
     else:
-        click.echo(f'The a client already exists with name: {name} and email: {email}')
+        click.echo(f"The a client already exists with name: {name} and email: {email}")
+
 
 @cli.command()
-@click.argument('client_id', type = click.INT)
-@click.argument('room_type', type = click.INT)
-@click.argument('start', type = click.DateTime(formats=["%Y-%m-%d"]))
-@click.argument('end', type = click.DateTime(formats=["%Y-%m-%d"]))
+@click.argument("client_id", type=click.INT)
+@click.argument("room_type", type=click.INT)
+@click.argument("start", type=click.DateTime(formats=["%Y-%m-%d"]))
+@click.argument("end", type=click.DateTime(formats=["%Y-%m-%d"]))
 @click.pass_obj
 def reserve_dates(config, client_id, room_type, start, end):
     """
@@ -249,43 +259,69 @@ def reserve_dates(config, client_id, room_type, start, end):
 
     if client_id in config.client_list.index:
 
-        if config.client_list.loc[client_id, 'state'] == 3:
+        if config.client_list.loc[client_id, "state"] == 3:
 
             hotel_path = helpers.get_hotel_path()
             full_path = os.path.join(config.cwd_path, hotel_path)
-            
+
             room_matching_type = helpers.get_room_of_type(config.hotel, room_type)
-            df_intervals = config.intervals[room_matching_type].dropna(axis = 0, how = 'all')
-            
-            available_rooms = helpers.get_room_number_optimized(df_intervals, start, end)
+            df_intervals = config.intervals[room_matching_type].dropna(
+                axis=0, how="all"
+            )
+
+            available_rooms = helpers.get_room_number_optimized(
+                df_intervals, start, end
+            )
             delta = end - start
 
             if available_rooms.empty:
-                click.echo('Sorry! There are no rooms available!')
+                click.echo("Sorry! There are no rooms available!")
             else:
-                best_room = available_rooms['room'][0]
+                best_room = available_rooms["room"][0]
 
                 payment = helpers.get_payment(config.hotel, best_room)
                 payment_due = delta.days * payment
                 paid = False
 
-                helpers.add_reservation_client_list(config.client_list, client_id, 2, start, end, best_room, payment_due, paid) 
+                helpers.add_reservation_client_list(
+                    config.client_list,
+                    client_id,
+                    2,
+                    start,
+                    end,
+                    best_room,
+                    payment_due,
+                    paid,
+                )
                 helpers.overwrite_client_list(config.client_list, full_path)
 
-                helpers.add_reservations(config.reservations, best_room, client_id, start) 
-                helpers.overwrite_reservations(config.reservations, config.cwd_path, hotel_path, best_room)
+                helpers.add_reservations(
+                    config.reservations, best_room, client_id, start
+                )
+                helpers.overwrite_reservations(
+                    config.reservations, config.cwd_path, hotel_path, best_room
+                )
 
-                helpers.add_intervals(config.intervals, best_room, start, end, hotel_path)      
-                helpers.overwrite_intervals(config.intervals, config.cwd_path, hotel_path, best_room)
+                helpers.add_intervals(
+                    config.intervals, best_room, start, end, hotel_path
+                )
+                helpers.overwrite_intervals(
+                    config.intervals, config.cwd_path, hotel_path, best_room
+                )
 
-                click.echo('Reservation successful!')
+                click.echo("Reservation successful!")
         else:
-            click.echo(f'The client ID {client_id} is currently unable to accept a new reservation. Please verify the current client state')
+            click.echo(
+                f"The client ID {client_id} is currently unable to accept a new reservation. Please verify the current client state"
+            )
     else:
-        click.echo(f'The client ID {client_id} does not exist. Please use a valid client ID')
+        click.echo(
+            f"The client ID {client_id} does not exist. Please use a valid client ID"
+        )
+
 
 @cli.command()
-@click.argument('client_id', type = click.INT)
+@click.argument("client_id", type=click.INT)
 @click.pass_obj
 def delete_reservation(config, client_id):
     """
@@ -307,33 +343,39 @@ def delete_reservation(config, client_id):
 
     if client_id in config.client_list.index:
 
-        if config.client_list.loc[client_id, 'state'] == 2:
+        if config.client_list.loc[client_id, "state"] == 2:
             hotel_path = helpers.get_hotel_path()
             full_path = os.path.join(config.cwd_path, hotel_path)
 
-            res_start = config.client_list.loc[client_id, 'start']
-            res_end = config.client_list.loc[client_id, 'end']
-            room_number = config.client_list.loc[client_id, 'reserved_room']
-            
+            res_start = config.client_list.loc[client_id, "start"]
+            res_end = config.client_list.loc[client_id, "end"]
+            room_number = config.client_list.loc[client_id, "reserved_room"]
+
             helpers.remove_reservation_client_list(config.client_list, client_id)
             helpers.overwrite_client_list(config.client_list, full_path)
-            
-            helpers.remove_reservations(config.reservations, res_start) 
-            helpers.overwrite_reservations(config.reservations, config.cwd_path, hotel_path, room_number)
+
+            helpers.remove_reservations(config.reservations, res_start)
+            helpers.overwrite_reservations(
+                config.reservations, config.cwd_path, hotel_path, room_number
+            )
 
             helpers.remove_intervals(config.intervals, res_start, res_end, room_number)
-            helpers.overwrite_intervals(config.intervals, config.cwd_path, hotel_path, room_number)
+            helpers.overwrite_intervals(
+                config.intervals, config.cwd_path, hotel_path, room_number
+            )
 
-            click.echo('The reservation has been deleted.')
+            click.echo("The reservation has been deleted.")
 
         else:
-            click.echo(f'The client ID {client_id} does not have a reservation.')
+            click.echo(f"The client ID {client_id} does not have a reservation.")
     else:
-        click.echo(f'The client ID {client_id} does not exist. Please use a valid client ID')
+        click.echo(
+            f"The client ID {client_id} does not exist. Please use a valid client ID"
+        )
 
 
 @cli.command()
-@click.argument('client_id', type = click.INT)
+@click.argument("client_id", type=click.INT)
 @click.pass_obj
 def check_in(config, client_id):
     """
@@ -355,28 +397,35 @@ def check_in(config, client_id):
 
     if client_id in config.client_list.index:
 
-        if config.client_list.loc[client_id, 'state'] == 2:
+        if config.client_list.loc[client_id, "state"] == 2:
 
             hotel_path = helpers.get_hotel_path()
             full_path = os.path.join(config.cwd_path, hotel_path)
 
-            res_start = config.client_list.loc[client_id, 'start']
-            room_number = config.client_list.loc[client_id, 'reserved_room']
+            res_start = config.client_list.loc[client_id, "start"]
+            room_number = config.client_list.loc[client_id, "reserved_room"]
 
             helpers.checkin_client_list(config.client_list, client_id)
             helpers.overwrite_client_list(config.client_list, full_path)
 
             helpers.pop_reservation(config.reservations, res_start, room_number)
-            helpers.overwrite_reservations(config.reservations, config.cwd_path, hotel_path, room_number)
-            click.echo('You are now checked in!')
+            helpers.overwrite_reservations(
+                config.reservations, config.cwd_path, hotel_path, room_number
+            )
+            click.echo("You are now checked in!")
         else:
-            click.echo(f'The client ID {client_id} does not have a reservation. Please first make a reservation')
+            click.echo(
+                f"The client ID {client_id} does not have a reservation. Please first make a reservation"
+            )
     else:
-        click.echo(f'The client ID {client_id} does not exist. Please use a valid client ID')
+        click.echo(
+            f"The client ID {client_id} does not exist. Please use a valid client ID"
+        )
+
 
 @cli.command()
-@click.argument('client_id', type = click.INT)
-@click.argument('paid', type = click.BOOL)
+@click.argument("client_id", type=click.INT)
+@click.argument("paid", type=click.BOOL)
 @click.pass_obj
 def check_out(config, client_id, paid):
     """
@@ -396,7 +445,7 @@ def check_out(config, client_id, paid):
 
     if client_id in config.client_list.index:
 
-        if config.client_list.loc[client_id, 'state'] == 1:
+        if config.client_list.loc[client_id, "state"] == 1:
 
             hotel_path = helpers.get_hotel_path()
             full_path = os.path.join(config.cwd_path, hotel_path)
@@ -404,15 +453,20 @@ def check_out(config, client_id, paid):
             helpers.checkout_client_list(config.client_list, client_id, paid)
             helpers.overwrite_client_list(config.client_list, full_path)
 
-            click.echo('You are now checked out!')
+            click.echo("You are now checked out!")
 
         else:
-            click.echo(f'The client ID {client_id} is not currently checked-in. Please first ensure client is checked-in')
+            click.echo(
+                f"The client ID {client_id} is not currently checked-in. Please first ensure client is checked-in"
+            )
     else:
-        click.echo(f'The client ID {client_id} does not exist. Please use a valid client ID')
+        click.echo(
+            f"The client ID {client_id} does not exist. Please use a valid client ID"
+        )
+
 
 @cli.command()
-@click.argument('client_id', type = click.INT)
+@click.argument("client_id", type=click.INT)
 @click.pass_obj
 def get_one_client(config, client_id):
     """
@@ -433,12 +487,15 @@ def get_one_client(config, client_id):
 
         client_info = config.client_list.iloc[client_id]
         click.echo(client_info)
-    
+
     else:
-        click.echo(f'The client ID {client_id} does not exist. Please use a valid client ID')
+        click.echo(
+            f"The client ID {client_id} does not exist. Please use a valid client ID"
+        )
+
 
 @cli.command()
-@click.argument('state', type = click.INT)
+@click.argument("state", type=click.INT)
 @click.pass_obj
 def get_some_clients(config, state):
     """
@@ -459,8 +516,9 @@ def get_some_clients(config, state):
     client while checked-in = 3
     """
     helpers.handle_session()
-    curr_clients = config.client_list.loc[config.client_list['state'] == state]
+    curr_clients = config.client_list.loc[config.client_list["state"] == state]
     click.echo(curr_clients)
+
 
 @cli.command()
 @click.pass_obj
@@ -480,12 +538,13 @@ def get_all_clients(config):
     """
 
     helpers.handle_session()
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+    with pd.option_context("display.max_rows", None, "display.max_columns", None):
         click.echo(config.client_list)
 
+
 @cli.command()
-@click.argument('name', type = click.STRING)
-@click.argument('email', type = click.STRING)
+@click.argument("name", type=click.STRING)
+@click.argument("email", type=click.STRING)
 @click.pass_obj
 def get_client_id(config, name, email):
     """
@@ -505,11 +564,14 @@ def get_client_id(config, name, email):
 
     id_list = helpers.unique_client(config.client_supp, name, email)
     if id_list.empty:
-        click.echo(f'The name: {name} and email: {email} does not match any known client ID')
-    
+        click.echo(
+            f"The name: {name} and email: {email} does not match any known client ID"
+        )
+
     else:
         client_id = int(id_list.squeeze())
-        click.echo(f'The client ID for {name} is {client_id}')
+        click.echo(f"The client ID for {name} is {client_id}")
+
 
 # @cli.command()
 # @click.pass_obj
