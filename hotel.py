@@ -582,6 +582,7 @@ def get_client_id(config, name, email):
 #     """
 #     click.echo('Hello World!')
 
+
 @cli.command()
 @click.pass_obj
 def clear_cache(config):
@@ -611,6 +612,7 @@ def clear_cache(config):
             return x
 
     config.intervals = df.apply(clear, axis=1).dropna()
+
 
 # @cli.command()
 # @click.pass_obj
