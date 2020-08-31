@@ -16,7 +16,7 @@ You are now READY to proceed!
 
 ## Description
 
-The Hotel Concierge Library is a Command Line Interface (CLI) program with 12 functions. A general description of each function can be viewed using the command `hotel --help`. Moreover, a more detailed description of each function can be viewed by using the command `hotel FUNCTION --help`.
+The Hotel Concierge Library is a Command Line Interface (CLI) program with 13 functions. A general description of each function can be viewed using the command `hotel --help`. Moreover, a more detailed description of each function can be viewed by using the command `hotel FUNCTION --help`.
 
 ### Config
 
@@ -95,6 +95,8 @@ Room of the hotel are represented with Reservations and Intervals objects.
 Each room has a list of incoming reservations, which will be removed once a client has either checked-in or decided to cancel the reservation. The Concierge holds the Reservations object as a sorted pandas Dataframe with DatetimeIndex (start), rooms as columns names, and client ID as values. Values are sorted by DatetimeIndex (i.e the next reservation for Room X will be at the top)
 
 Each room also has a list of available intervals, to which a new reservation can be added to, splicing the interval into two remaining interval segments. The Concierge holds the Intervals object as a sorted pandas Dataframe with DatetimeIndex (start), rooms as column names, and Datatime (end) as values.
+
+After a while you might find that `reserve-dates()` runs slow because of increasing expired intervals. Run `hotel clear-cache` to speed up the process.
 
 As commands are issued to the Concierge the room objects and the relevant `*.csv` files are updated. 
 
