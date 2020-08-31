@@ -4,6 +4,7 @@ import helpers
 import os
 import shutil
 import fnmatch
+from datetime import datetime
 
 # import sqlite3
 
@@ -580,6 +581,36 @@ def get_client_id(config, name, email):
 #     Prev command stored in sessions.csv
 #     """
 #     click.echo('Hello World!')
+
+@cli.command()
+@click.pass_obj
+def clear_cache(config):
+    """
+    Clear Intervals which have expired. 
+
+    Usage:\n
+    hotel clear-cache\n
+
+    Arguments:\n
+    None\n
+
+    Description:\n
+    This commmand removes intervals where intv_end < current_date.\n 
+    Run if reserve_dates() is slow.
+    """
+    helpers.handle_session()
+
+    df = config.intervals.stack().swaplevel(0, 1).reset_index()
+    df.columns = ["room", "start", "end"]
+    curr_date = datetime.date(datetime.now())
+
+    def clear(x):
+        if x["end"].date() < curr_date:
+            return pd.Series(data=[None, None, None], index=x.index)
+        else:
+            return x
+
+    config.intervals = df.apply(clear, axis=1).dropna()
 
 # @cli.command()
 # @click.pass_obj
